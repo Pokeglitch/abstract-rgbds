@@ -151,8 +151,6 @@ Each Instance of an Interface is also automatically assigned the following prope
   * `Isolate` - Whether or not methods higher up the Interface stack are accessible
     * Default: `true`
 
-The standard is to assign properties to an instance is with `#`, and to assign macros to an instance with `@`
-
 While not mandatory, the standard for all pre-defined Contexts is to automatically adds the reference to the Instance self as the first argument to all method calls. (Same as how Python handles Classes).
 
 Therefore, the following is an example of setting an Interface as Isolated from within an Interface method:
@@ -174,6 +172,10 @@ When an Instance of this Interface is created, the property will be assigned to 
 
 While again, not mandatory, <InitializationMacro> usually will refer to a **Type** Interface.
 
+Properties are mapped to an instance by `#`:
+```
+  myInstance#myProperty ; to access the property
+```
 ---
 ### **method**
 The typical syntax to define a method is:
@@ -183,6 +185,12 @@ The typical syntax to define a method is:
         ...
     endm
 ```
+
+Methods are mapped to an Instance with `@`:
+```
+  myInstance@myMethod <Arguments>  ; to call the method
+```
+
 The method `init` will be auto executed when a new Instance of this Interface is opened.  The method `exit` will be auto execture when the Instace closes
 
 A `method` can have multiple names assigned to it, but at least 1 is required.  This is typically only necessary if it inherits from another Interface, or will be Inherited by another Interface to create unique `super` scenarios. 
@@ -191,18 +199,34 @@ Using `super` from a child Interface will call this method if the name of the me
 
 Likewise, calling `super` from within this method will refer to the super Interface method with whatever name this method was accessed by.
 
-The `args` line is required, though the arguments names are optional. Each named argument will have its value assigned to the corresponding argument by index.  Empty argument names will be skipped.  For example:
+The `args` line is required, though the arguments names are optional. Each named argument will have its value assigned to the corresponding argument by index.  In addition:
+  * Remember, the first argument will always refer to the Instance the method is mapped to
+  * Empty argument names will be skipped
+  * Argument names starting with `#` will be assigned to the Instance member of that name
+  * Default values can be set with `=`
+
+For example:
 ```
     method myMethod
-      args self, name, , age
+      args self, Name, #Age, , State, Country=USA
         ...
     endm
 ```
-In this example, self = `"\1"`, name = `"\2"`, and age = `"\4"`
 
-If the argument is not provided, the name will not be defined
+Then, if called:
+```
+  myInstance@myMethod Joe, 50, Boston
+```
 
-The number of named arguments can be accessed via `_nname`. This is useful to, for example, shift away named args and forward the remaining ones to another method.
+Then the arguments within `myMethod` would be assigned as follows:
+  * `self` = `myInstance`
+  * `Name` = `Joe`
+  * `myInstance#Age` = 50
+  * `State` will be undefined (`def(State) == 0`)
+  * `Country` = `USA`
+
+
+The number of named arguments can be accessed via `_nname`. This is useful to, for example, shift away named args and forward the remaining ones to another method.  Arguments without names are included in the count of `_nname`.  In the above example, `_nname` = 6
 
 In additional to the above syntax for methods, there is also the one line syntax to create a lambda method.
 
