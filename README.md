@@ -40,11 +40,29 @@ To simplify what is explained above, this library has a particular heirarchy of 
 # Reference
 
 
-## Base
-This library comes with some base macro that are utilized elsewhere in the library.  However, some are generic enough that they can be used elsewhere in the source
+## General
+This library comes with some general macro that are utilized elsewhere in the library.  However, some are generic enough that they can be used elsewhere in the source.
 
+The following are simple String Expressions:
+  * `_narg` equs  "_NARG"
+  * `true` equs  "1"
+  * `false` equs  "0"
+  * `not` equs  "!"
 
+In addition to those, the ability to return values from macros and assign to a particular name has been added with the following sytax:
+```
+  var <name> = <MacroName>(<Arguments>*)  ; If value is numerical
+  vars <name> = <MacroName>(<Arguments>*) ; if value is String
+```
 
+The parentheses are necessary, since it simulations a function call.  Inside the parenthesis are any arguments to send to the macro.
+
+Them, from the macro which is to return a value, simply add:
+```
+  return <ReturnValue>
+```
+
+This will automatically assign <ReturnValue> to <name>
 
 ## Context
 
